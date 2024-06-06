@@ -72,7 +72,7 @@ mttd keys add alice --keyring-backend file --home ~/.mtt
 获取到模块管理员地址之后,更换init.sh里的app_state["erc20"]["params"]["admin"]字段
 ### 第一个节点
 设置创世mint token的数量  
-21e7+4e6+1e4  
+21e7+4e6+1e5+1e4  
 2.1亿用于挖矿奖励，400万 4个节点质押100万个，10w用于分发，1w个用于开发  
 总量：214110000
 ```
