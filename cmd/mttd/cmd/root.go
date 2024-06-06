@@ -39,6 +39,7 @@ import (
 
 	mttclient "mtt/client"
 	"mtt/client/debug"
+	"mtt/crypto/hd"
 	mttserver "mtt/server"
 	servercfg "mtt/server/config"
 	srvflags "mtt/server/flags"
@@ -61,6 +62,7 @@ func NewRootCmd() (*cobra.Command, simappparams.EncodingConfig) {
 		WithInput(os.Stdin).
 		WithAccountRetriever(types.AccountRetriever{}).
 		WithHomeDir(app.DefaultNodeHome).
+		WithKeyringOptions(hd.EthSecp256k1Option()).
 		WithViper("")
 
 	eip712.SetEncodingConfig(encodingConfig)

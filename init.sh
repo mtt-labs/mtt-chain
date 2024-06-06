@@ -1,5 +1,5 @@
 KEY="alice"
-CHAINID="mttd_6112-1"
+CHAINID="mttd_6118-1"
 MONIKER="mtt-node-one"
 KEYRING="test"
 LOGLEVEL="info"
@@ -32,6 +32,7 @@ cat $HOMEDIR/config/genesis.json | jq '.app_state["gov"]["params"]["min_deposit"
 cat $HOMEDIR/config/genesis.json | jq '.app_state["inflation"]["params"]["mint_denom"]="amtt"' > $HOMEDIR/config/tmp_genesis.json && mv $HOMEDIR/config/tmp_genesis.json $HOMEDIR/config/genesis.json
 cat $HOMEDIR/config/genesis.json | jq '.app_state["mint"]["params"]["coin"]["denom"]="amtt"' > $HOMEDIR/config/tmp_genesis.json && mv $HOMEDIR/config/tmp_genesis.json $HOMEDIR/config/genesis.json
 cat $HOMEDIR/config/genesis.json | jq '.app_state["mint"]["params"]["blocks_per_year"]="10512000"' > $HOMEDIR/config/tmp_genesis.json && mv $HOMEDIR/config/tmp_genesis.json $HOMEDIR/config/genesis.json
+cat $HOMEDIR/config/genesis.json | jq '.app_state["mint"]["params"]["begin_block"]="10512000"' > $HOMEDIR/config/tmp_genesis.json && mv $HOMEDIR/config/tmp_genesis.json $HOMEDIR/config/genesis.json
 cat $HOMEDIR/config/genesis.json | jq '.app_state["erc20"]["params"]["admin"]="mtt1dhw8gv3my5yuwprr7m862lx72n3gndks0p0e35"' > $HOMEDIR/config/tmp_genesis.json && mv $HOMEDIR/config/tmp_genesis.json $HOMEDIR/config/genesis.json
 #cat $HOMEDIR/config/genesis.json | jq '.app_state["feemarket"]["params"]["no_base_fee"]=true' > $HOMEDIR/config/tmp_genesis.json && mv $HOMEDIR/config/tmp_genesis.json $HOMEDIR/config/genesis.json
 cat $HOMEDIR/config/genesis.json | jq '.app_state["distribution"]["params"]["community_tax"]="0.000000000000000000"' > $HOMEDIR/config/tmp_genesis.json && mv $HOMEDIR/config/tmp_genesis.json $HOMEDIR/config/genesis.json
@@ -85,16 +86,16 @@ if [[ "$OSTYPE" == "darwin"* ]]; then
 fi
 
 # Allocate genesis accounts (cosmos formatted addresses)
-mttd add-genesis-account $KEY 300000000000000000000000000amtt --keyring-backend $KEYRING --home $HOMEDIR
+mttd add-genesis-account $KEY 214110000000000000000000000amtt --keyring-backend $KEYRING --home $HOMEDIR
 
 # Update total supply with claim values
 validators_supply=$(cat $HOMEDIR/config/genesis.json | jq -r '.app_state["bank"]["supply"][0]["amount"]')
-total_supply=300000000000000000000000000
+total_supply=214110000000000000000000000
 cat $HOMEDIR/config/genesis.json | jq -r '.app_state["bank"]["supply"][0]["denom"]="amtt"' > $HOMEDIR/config/tmp_genesis.json && mv $HOMEDIR/config/tmp_genesis.json $HOMEDIR/config/genesis.json
 cat $HOMEDIR/config/genesis.json | jq -r --arg total_supply "$total_supply" '.app_state["bank"]["supply"][0]["amount"]=$total_supply' > $HOMEDIR/config/tmp_genesis.json && mv $HOMEDIR/config/tmp_genesis.json $HOMEDIR/config/genesis.json
 
 # Sign genesis transaction
-mttd gentx $KEY 10000000000000000000000amtt --keyring-backend $KEYRING --chain-id $CHAINID --home $HOMEDIR
+mttd gentx $KEY 1000000000000000000000000amtt --keyring-backend $KEYRING --chain-id $CHAINID --home $HOMEDIR
 
 # Collect genesis tx
 mttd collect-gentxs --home $HOMEDIR
