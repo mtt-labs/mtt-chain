@@ -65,11 +65,28 @@ Use "mttdd [command] --help" for more information about a command.
 ```
 
 ## 初始化
+### 初始化管理员钱包
+```
+mttd keys add alice --keyring-backend file --home ~/.mtt
+```
+获取到模块管理员地址之后,更换init.sh里的app_state["erc20"]["params"]["admin"]字段
 ### 第一个节点
+设置创世mint token的数量  
+21e7+4e6+1e4  
+2.1亿用于挖矿奖励，400万 4个节点质押100万个，10w用于分发，1w个用于开发  
+总量：214110000
 ```
 ./init.sh
 ```
-运行完成，确认无错误之后就可以开始运行节点了
+运行完成，确认无错误之后就可以开始运行节点了    
+使用创世钱包往模块注资（用于分发奖励）
+```
+mttd tx erc20 fund 210000000 --from alice --home ~/.mtt/ --keyring-backend file --chain-id mttd_6118-1
+```
+先使用创世钱包给管理员钱包转点gas费，然后使用管理员钱包设置桥地址，需要先部署桥合约获得桥地址
+```
+mttd tx erc20 set-bridge 0x2773D083ace5ad7a46E60477B02193E635F366E0 --from alice --home ~/.mtt --keyring-backend file
+```
 
 ### 其他节点
 ```
