@@ -1,5 +1,5 @@
 KEY="alice"
-CHAINID="mttd_6118-1"
+CHAINID="mtt_6118-1"
 MONIKER="mtt-node-one"
 KEYRING="test"
 LOGLEVEL="info"
@@ -37,7 +37,6 @@ cat $HOMEDIR/config/genesis.json | jq '.app_state["erc20"]["params"]["admin"]="m
 #cat $HOMEDIR/config/genesis.json | jq '.app_state["feemarket"]["params"]["no_base_fee"]=true' > $HOMEDIR/config/tmp_genesis.json && mv $HOMEDIR/config/tmp_genesis.json $HOMEDIR/config/genesis.json
 cat $HOMEDIR/config/genesis.json | jq '.app_state["distribution"]["params"]["community_tax"]="0.000000000000000000"' > $HOMEDIR/config/tmp_genesis.json && mv $HOMEDIR/config/tmp_genesis.json $HOMEDIR/config/genesis.json
 cat $HOMEDIR/config/genesis.json | jq '.app_state["mint"]["params"]["coin"]["amount"]="210000000000000000000000000"' > $HOMEDIR/config/tmp_genesis.json && mv $HOMEDIR/config/tmp_genesis.json $HOMEDIR/config/genesis.json
-
 
 #
 # disable produce empty block
