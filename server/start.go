@@ -66,7 +66,7 @@ import (
 	ethdebug "mtt/rpc/namespaces/ethereum/debug"
 	"mtt/server/config"
 	srvflags "mtt/server/flags"
-	boyaatypes "mtt/types"
+	mtttypes "mtt/types"
 )
 
 // DBOpener is a function to open `application.db`, potentially with customized options.
@@ -421,7 +421,7 @@ func startInProcess(ctx *server.Context, clientCtx client.Context, opts StartOpt
 		ethmetricsexp.Setup(config.JSONRPC.MetricsAddress)
 	}
 
-	var idxer boyaatypes.EVMTxIndexer
+	var idxer mtttypes.EVMTxIndexer
 	if config.JSONRPC.EnableIndexer {
 		idxDB, err := OpenIndexerDB(home, server.GetAppDBBackend(ctx.Viper))
 		if err != nil {

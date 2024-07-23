@@ -114,7 +114,7 @@ import (
 	erc20types "mtt/x/erc20/types"
 
 	srvflags "mtt/server/flags"
-	boyaatypes "mtt/types"
+	mtttypes "mtt/types"
 	"mtt/x/evm"
 	"mtt/x/feemarket"
 
@@ -369,7 +369,7 @@ func New(
 	app.AccountKeeper = authkeeper.NewAccountKeeper(
 		appCodec,
 		keys[authtypes.StoreKey],
-		boyaatypes.ProtoAccount,
+		mtttypes.ProtoAccount,
 		maccPerms,
 		sdk.Bech32PrefixAccAddr,
 		authtypes.NewModuleAddress(govtypes.ModuleName).String(),
@@ -787,7 +787,7 @@ func (app *App) Name() string { return app.BaseApp.Name() }
 // BeginBlocker application updates every begin block
 func (app *App) BeginBlocker(ctx sdk.Context, req abci.RequestBeginBlock) abci.ResponseBeginBlock {
 	// Perform any scheduled forks before executing the modules logic
-	app.ScheduleForkUpgrade(ctx)
+	BeginBlockForks(ctx, app)
 	return app.mm.BeginBlock(ctx, req)
 }
 
@@ -976,7 +976,7 @@ func (app *App) setAnteHandler(txConfig client.TxConfig, maxGasWanted uint64) {
 		EvmKeeper:              app.EvmKeeper,
 		FeeMarketKeeper:        app.FeeMarketKeeper,
 		MaxTxGasWanted:         maxGasWanted,
-		ExtensionOptionChecker: boyaatypes.HasDynamicFeeExtensionOption,
+		ExtensionOptionChecker: mtttypes.HasDynamicFeeExtensionOption,
 		TxFeeChecker:           ante.NewDynamicFeeChecker(app.EvmKeeper),
 		DisabledAuthzMsgs: []string{
 			sdk.MsgTypeURL(&evmtypes.MsgEthereumTx{}),

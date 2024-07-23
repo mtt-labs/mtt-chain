@@ -15,7 +15,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/gov/client/cli"
 	"github.com/ethereum/go-ethereum/common"
 
-	boyaatypes "mtt/types"
+	mtttypes "mtt/types"
 
 	"mtt/x/erc20/types"
 )
@@ -62,7 +62,7 @@ func NewConvertCoinCmd() *cobra.Command {
 
 			if len(args) == 2 {
 				receiver = args[1]
-				if err := boyaatypes.ValidateAddress(receiver); err != nil {
+				if err := mtttypes.ValidateAddress(receiver); err != nil {
 					return fmt.Errorf("invalid receiver hex address %w", err)
 				}
 			} else {
@@ -100,7 +100,7 @@ func NewConvertERC20Cmd() *cobra.Command {
 			}
 
 			contract := args[0]
-			if err := boyaatypes.ValidateAddress(contract); err != nil {
+			if err := mtttypes.ValidateAddress(contract); err != nil {
 				return fmt.Errorf("invalid ERC20 contracts address %w", err)
 			}
 
