@@ -26,6 +26,11 @@ service Msg {
   rpc SetBridge(MsgSetBridge) returns (MsgSetBridgeResponse) {
     option (google.api.http).get = "/mtt/erc20/v1/tx/set_bridge";
   };
+  // SetBridge set bridge address
+  // mtt bridge address.
+  rpc SetAdmin(MsgSetAdmin) returns (MsgSetAdminResponse) {
+    option (google.api.http).get = "/mtt/erc20/v1/tx/set_bridge";
+  };
   // SetBeginBlock set mine begin block
   // the height of staking have reward.
   rpc SetBeginBlock(MsgSetBeginBlock) returns (MsgSetBeginBlockResponse) {
@@ -58,7 +63,17 @@ message MsgSetBridge {
 // MsgSetBridgeResponse returns no fields
 message MsgSetBridgeResponse {}
 
-// MsgSetBridge defines a Msg to set bridge address
+// MsgSetAdmin defines a Msg to set bridge admin
+message MsgSetAdmin {
+  option (cosmos.msg.v1.signer) = "from_address";
+  string   from_address                    = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+  string address = 2;
+}
+
+// MsgSetBridgeResponse returns no fields
+message MsgSetAdminResponse {}
+
+// MsgFundMint defines a Msg to set bridge address
 message MsgFundMint {
   option (cosmos.msg.v1.signer) = "from_address";
   string   from_address                    = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];

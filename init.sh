@@ -1,5 +1,5 @@
 KEY="alice"
-CHAINID="mtt_6118-1"
+CHAINID="mtt_6880-1"
 MONIKER="mtt-node-one"
 KEYRING="test"
 LOGLEVEL="info"
@@ -15,6 +15,8 @@ mttd config chain-id $CHAINID --home $HOMEDIR
 
 # if $KEY exists it should be deleted
 mttd keys add $KEY --keyring-backend $KEYRING --home $HOMEDIR
+
+ADDR=$(mttd keys show alice | grep "address" | awk '{print $3}')
 
 # Set moniker and chain-id for cosmos (Moniker can be anything, chain-id must be an integer)
 mttd init $MONIKER --chain-id $CHAINID --home $HOMEDIR --overwrite
@@ -32,9 +34,9 @@ cat $HOMEDIR/config/genesis.json | jq '.app_state["gov"]["params"]["min_deposit"
 cat $HOMEDIR/config/genesis.json | jq '.app_state["inflation"]["params"]["mint_denom"]="amtt"' > $HOMEDIR/config/tmp_genesis.json && mv $HOMEDIR/config/tmp_genesis.json $HOMEDIR/config/genesis.json
 cat $HOMEDIR/config/genesis.json | jq '.app_state["mint"]["params"]["coin"]["denom"]="amtt"' > $HOMEDIR/config/tmp_genesis.json && mv $HOMEDIR/config/tmp_genesis.json $HOMEDIR/config/genesis.json
 cat $HOMEDIR/config/genesis.json | jq '.app_state["mint"]["params"]["blocks_per_year"]="10512000"' > $HOMEDIR/config/tmp_genesis.json && mv $HOMEDIR/config/tmp_genesis.json $HOMEDIR/config/genesis.json
-cat $HOMEDIR/config/genesis.json | jq '.app_state["mint"]["params"]["begin_block"]="10512000"' > $HOMEDIR/config/tmp_genesis.json && mv $HOMEDIR/config/tmp_genesis.json $HOMEDIR/config/genesis.json
-cat $HOMEDIR/config/genesis.json | jq '.app_state["erc20"]["params"]["admin"]="mtt1dhw8gv3my5yuwprr7m862lx72n3gndks0p0e35"' > $HOMEDIR/config/tmp_genesis.json && mv $HOMEDIR/config/tmp_genesis.json $HOMEDIR/config/genesis.json
-#cat $HOMEDIR/config/genesis.json | jq '.app_state["feemarket"]["params"]["no_base_fee"]=true' > $HOMEDIR/config/tmp_genesis.json && mv $HOMEDIR/config/tmp_genesis.json $HOMEDIR/config/genesis.json
+cat $HOMEDIR/config/genesis.json | jq '.app_state["mint"]["params"]["begin_block"]="6048000"' > $HOMEDIR/config/tmp_genesis.json && mv $HOMEDIR/config/tmp_genesis.json $HOMEDIR/config/genesis.json
+cat $HOMEDIR/config/genesis.json | jq '.app_state["erc20"]["params"]["admin"]="'$ADDR'"' > $HOMEDIR/config/tmp_genesis.json && mv $HOMEDIR/config/tmp_genesis.json $HOMEDIR/config/genesis.json
+#cat $HOMEDIR/config/genesis.json | jq '.app_state["feemarket"]["params"]["min_gas_price"]="10000000000"' > $HOMEDIR/config/tmp_genesis.json && mv $HOMEDIR/config/tmp_genesis.json $HOMEDIR/config/genesis.json
 cat $HOMEDIR/config/genesis.json | jq '.app_state["distribution"]["params"]["community_tax"]="0.000000000000000000"' > $HOMEDIR/config/tmp_genesis.json && mv $HOMEDIR/config/tmp_genesis.json $HOMEDIR/config/genesis.json
 cat $HOMEDIR/config/genesis.json | jq '.app_state["mint"]["params"]["coin"]["amount"]="210000000000000000000000000"' > $HOMEDIR/config/tmp_genesis.json && mv $HOMEDIR/config/tmp_genesis.json $HOMEDIR/config/genesis.json
 
@@ -94,7 +96,7 @@ cat $HOMEDIR/config/genesis.json | jq -r '.app_state["bank"]["supply"][0]["denom
 cat $HOMEDIR/config/genesis.json | jq -r --arg total_supply "$total_supply" '.app_state["bank"]["supply"][0]["amount"]=$total_supply' > $HOMEDIR/config/tmp_genesis.json && mv $HOMEDIR/config/tmp_genesis.json $HOMEDIR/config/genesis.json
 
 # Sign genesis transaction
-mttd gentx $KEY 1000000000000000000000000amtt --keyring-backend $KEYRING --chain-id $CHAINID --home $HOMEDIR
+mttd gentx $KEY 1000000000000000000000000amtt --keyring-backend $KEYRING --chain-id $CHAINID --home $HOMEDIR --fees 20000000000000000amtt
 
 # Collect genesis tx
 mttd collect-gentxs --home $HOMEDIR
@@ -103,4 +105,4 @@ mttd collect-gentxs --home $HOMEDIR
 mttd validate-genesis --home $HOMEDIR
 
 #Start the node
-echo mttd start --pruning=nothing --json-rpc.api eth,txpool,net,web3 --log_level info --home $HOMEDIR
+echo mttd start --pruning=nothing --json-rpc.api eth,txpool,net,web3,trace,debug --log_level info --home $HOMEDIR

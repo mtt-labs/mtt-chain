@@ -17,6 +17,7 @@ const (
 	TypeMsgConvertCoin   = "convert_coin"
 	TypeMsgConvertERC20  = "convert_ERC20"
 	TypeMsgSetBridge     = "set_bridge"
+	TypeMsgSetAdmin      = "set_admin"
 	TypeMsgSetBeginBlock = "set_begin_block"
 	TypeMsgFundMint      = "set_fund_mint"
 )
@@ -134,7 +135,7 @@ func (msg MsgSetBridge) ValidateBasic() error {
 	}
 	_, err := sdk.AccAddressFromBech32(msg.FromAddress)
 	if err != nil {
-		return sdkerrors.Wrap(err, "invalid receiver address")
+		return sdkerrors.Wrap(err, "invalid bridge address")
 	}
 	return nil
 }
@@ -146,6 +147,47 @@ func (msg MsgSetBridge) GetSignBytes() []byte {
 
 // GetSigners defines whose signature is required
 func (msg MsgSetBridge) GetSigners() []sdk.AccAddress {
+	addr, err := sdk.AccAddressFromBech32(msg.FromAddress)
+	if err != nil {
+		return []sdk.AccAddress{}
+	}
+	return []sdk.AccAddress{addr}
+}
+
+// NewMsgSetAdmin creates a new instance of MsgSetAdmin
+func NewMsgSetAdmin(fromAddress sdk.AccAddress, address common.Address) *MsgSetAdmin { // nolint: interfacer
+	return &MsgSetAdmin{
+		FromAddress: fromAddress.String(),
+		Address:     address.String(),
+	}
+}
+
+// Route should return the name of the module
+func (msg MsgSetAdmin) Route() string { return RouterKey }
+
+// Type should return the action
+func (msg MsgSetAdmin) Type() string { return TypeMsgSetAdmin }
+
+// ValidateBasic runs stateless checks on the message
+func (msg MsgSetAdmin) ValidateBasic() error {
+	_, err := sdk.AccAddressFromBech32(msg.Address)
+	if err != nil {
+		return sdkerrors.Wrap(err, "invalid admin address")
+	}
+	_, err = sdk.AccAddressFromBech32(msg.FromAddress)
+	if err != nil {
+		return sdkerrors.Wrap(err, "invalid admin address")
+	}
+	return nil
+}
+
+// GetSignBytes encodes the message for signing
+func (msg MsgSetAdmin) GetSignBytes() []byte {
+	return sdk.MustSortJSON(AminoCdc.MustMarshalJSON(&msg))
+}
+
+// GetSigners defines whose signature is required
+func (msg MsgSetAdmin) GetSigners() []sdk.AccAddress {
 	addr, err := sdk.AccAddressFromBech32(msg.FromAddress)
 	if err != nil {
 		return []sdk.AccAddress{}

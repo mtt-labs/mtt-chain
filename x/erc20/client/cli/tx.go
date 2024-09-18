@@ -34,6 +34,7 @@ func NewTxCmd() *cobra.Command {
 		NewConvertCoinCmd(),
 		NewConvertERC20Cmd(),
 		NewSetBridgeCmd(),
+		NewSetAdminCmd(),
 		NewSetBeginHeightCmd(),
 		NewFundMintCmd(),
 	)
@@ -160,6 +161,44 @@ func NewSetBridgeCmd() *cobra.Command {
 			}
 
 			msg := &types.MsgSetBridge{
+				FromAddress: senderAddress,
+				Address:     address,
+			}
+
+			if err := msg.ValidateBasic(); err != nil {
+				return err
+			}
+
+			return tx.GenerateOrBroadcastTxCLI(cliCtx, cmd.Flags(), msg)
+		},
+	}
+
+	flags.AddTxFlagsToCmd(cmd)
+	return cmd
+}
+
+func NewSetAdminCmd() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "set-admin [address]",
+		Short: "set admin address.",
+		Args:  cobra.RangeArgs(1, 2),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			cliCtx, err := client.GetClientTxContext(cmd)
+			if err != nil {
+				return err
+			}
+
+			address := args[0]
+			var senderAddress string
+			sender := cliCtx.GetFromAddress()
+
+			if len(args) == 2 {
+				senderAddress = args[1]
+			} else {
+				senderAddress = sender.String()
+			}
+
+			msg := &types.MsgSetAdmin{
 				FromAddress: senderAddress,
 				Address:     address,
 			}

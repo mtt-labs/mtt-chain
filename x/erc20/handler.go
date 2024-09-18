@@ -28,6 +28,9 @@ func NewHandler(server types.MsgServer) sdk.Handler {
 		case *types.MsgFundMint:
 			res, err := server.FundMint(sdk.WrapSDKContext(ctx), msg)
 			return sdk.WrapServiceResult(ctx, res, err)
+		case *types.MsgSetAdmin:
+			res, err := server.SetAdmin(sdk.WrapSDKContext(ctx), msg)
+			return sdk.WrapServiceResult(ctx, res, err)
 		default:
 			err := sdkerrors.Wrapf(sdkerrors.ErrUnknownRequest, "unrecognized %s message type: %T", types.ModuleName, msg)
 			return nil, err

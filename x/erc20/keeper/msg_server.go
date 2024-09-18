@@ -599,3 +599,29 @@ func (k Keeper) FundMint(
 	}
 	return &types.MsgFundMintResponse{}, nil
 }
+
+func (k Keeper) SetAdmin(
+	goCtx context.Context,
+	msg *types.MsgSetAdmin,
+) (*types.MsgSetAdminResponse, error) {
+	//msg.FromAddress
+	ctx := sdk.UnwrapSDKContext(goCtx)
+	params := k.GetParams(ctx)
+	adminBech32, err := sdk.AccAddressFromBech32(params.Admin)
+	if err != nil {
+		return nil, err
+	}
+
+	senderBech32, err := sdk.AccAddressFromBech32(msg.FromAddress)
+	if err != nil {
+		return nil, err
+	}
+	if !adminBech32.Equals(senderBech32) {
+		return nil, types.ErrCallerNotAdmin
+	}
+
+	params.Admin = msg.Address
+	k.SetParams(ctx, params)
+
+	return &types.MsgSetAdminResponse{}, nil
+}
