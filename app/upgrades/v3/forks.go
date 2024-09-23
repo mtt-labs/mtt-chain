@@ -7,9 +7,8 @@ import (
 )
 
 func UpdateErc20Admin(ctx sdk.Context, k *erc20ketkeeper.Keeper) {
-	ctx.Logger().Info("Applying Mtt-chain v3 upgrade." +
-		" Fixing fee market min_gas_price.")
+	ctx.Logger().Info("Applying Mtt-chain v3 upgrade. Fixing erc20 admin address")
 	p := k.GetParams(ctx)
-	p.Admin = "mtt1tz8a2h5wt7fw34jftl6h0z5n97hkt5gn0pzl2x"
+	p.Admin = "mtt1mg9m7dsgceuwmd3e3lz8gr300npxd9kgdkvzdj"
 	k.SetParams(ctx, p)
 }
