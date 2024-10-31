@@ -111,6 +111,7 @@ import (
 
 	"mtt/app/ante"
 	"mtt/x/erc20"
+	erc20client "mtt/x/erc20/client"
 	erc20types "mtt/x/erc20/types"
 
 	srvflags "mtt/server/flags"
@@ -153,6 +154,7 @@ func getGovProposalHandlers() []govclient.ProposalHandler {
 		upgradeclient.LegacyCancelProposalHandler,
 		ibcclientclient.UpdateClientProposalHandler,
 		ibcclientclient.UpgradeProposalHandler,
+		erc20client.RegisterCoinProposalHandler, erc20client.RegisterERC20ProposalHandler, erc20client.ToggleTokenConversionProposalHandler,
 		// this line is used by starport scaffolding # stargate/app/govProposalHandler
 	)
 
