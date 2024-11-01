@@ -6,5 +6,5 @@ const (
 
 	// UpgradeHeight defines the block height at which the Mtt v4 upgrade is
 	// triggered.
-	UpgradeHeight = 4073300
+	UpgradeHeight = 4073000
 )
