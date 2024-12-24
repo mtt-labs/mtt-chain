@@ -228,7 +228,7 @@ require (
 )
 
 replace (
-	github.com/cosmos/cosmos-sdk => github.com/mtt-labs/cosmos-sdk v0.47.3-rc2
+	github.com/cosmos/cosmos-sdk => github.com/mtt-labs/cosmos-sdk v0.47.3-rc3
 	//github.com/cosmos/cosmos-sdk => ../cosmos-sdk
 	//github.com/cometbft/cometbft => ../cometbft
 	github.com/gogo/protobuf => github.com/regen-network/protobuf v1.3.3-alpha.regen.1

@@ -116,6 +116,7 @@ func NewRootCmd() (*cobra.Command, simappparams.EncodingConfig) {
 // return tmcfg.DefaultConfig if no custom configuration is required for the application.
 func initTendermintConfig() *tmcfg.Config {
 	cfg := tmcfg.DefaultConfig()
+	cfg.Instrumentation.Prometheus = true
 	return cfg
 }
 
