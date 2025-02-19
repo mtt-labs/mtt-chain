@@ -34,7 +34,7 @@ contract MttBridge is Ownable {
     event SetFeeEvent(uint256 fee);
     event SetConfirmationsRequiredEvent(uint256 confirmationsRequired);
     event PauseEvent(bool status);
-    event ConfirmEvent(bytes32 indexed hash, address indexed account);
+    event ConfirmEvent(bytes32 indexed hash,bytes32 txHash, address indexed account);
     event BridgeEvent(address indexed account, uint256 value, string chain);
 
     constructor(
@@ -95,6 +95,7 @@ contract MttBridge is Ownable {
         uint256 _confirmationsRequired
     ) external onlyOwner {
         numConfirmationsRequired = _confirmationsRequired;
+        require(numConfirmationsRequired>0, "invalid number of required confirmations");
         require(minterNum >= numConfirmationsRequired, "minter not enough");
         emit SetConfirmationsRequiredEvent(_confirmationsRequired);
     }
@@ -122,21 +123,16 @@ contract MttBridge is Ownable {
         _;
     }
 
-    modifier notConfirmed(bytes32 txHash) {
-        require(!isConfirmed[txHash][msg.sender], "tx already confirmed");
-        _;
-    }
-
     function mint(
         bytes32 txHash,
         address addr,
         uint256 amount
-    ) external onlyMinter notExecuted(txHash) notConfirmed(txHash) {
-        log storage txLog = logs[txHash];
+    ) external onlyMinter notExecuted(txHash) {
+        bytes32 hash = keccak256(abi.encodePacked(txHash, addr, amount));
+        require(!isConfirmed[hash][msg.sender], "tx already confirmed");
+        log storage txLog = logs[hash];
 
         if (txLog.addr != address(0)) {
-            require(txLog.addr == addr, "tx addr not same");
-            require(txLog.amount == amount, "tx amount not same");
             txLog.approveNum = txLog.approveNum + 1;
         } else {
             txLog.addr = addr;
@@ -144,9 +140,9 @@ contract MttBridge is Ownable {
             txLog.approveNum = 1;
             txLog.txHash = txHash;
         }
-        isConfirmed[txHash][msg.sender] = true;
+        isConfirmed[hash][msg.sender] = true;
 
-        emit ConfirmEvent(txHash, msg.sender);
+        emit ConfirmEvent(hash,txHash, msg.sender);
 
         if (txLog.approveNum >= numConfirmationsRequired) {
             if (txLog.amount > fee) {
