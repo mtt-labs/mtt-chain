@@ -1,9 +1,10 @@
-// SPDX-License-Identifier: UNLICENSED
 pragma solidity ^0.8.20;
 
 import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
+import {IERC20Permit} from "@openzeppelin/contracts/token/ERC20/extensions/IERC20Permit.sol";
+import {IERC20} from "@openzeppelin/contracts/interfaces/IERC20.sol";
 
-contract MttBridge is Ownable {
+contract EthBridge is Ownable {
     bool public isPause;
     uint256 public numConfirmationsRequired;
     uint256 public minterNum;
@@ -15,6 +16,8 @@ contract MttBridge is Ownable {
 
     mapping(address => bool) public isMinter;
     mapping(bytes32 => mapping(address => bool)) public isConfirmed;
+
+    address public token;
 
     struct log {
         bytes32 txHash;
@@ -32,6 +35,7 @@ contract MttBridge is Ownable {
     event SetChainEvent(string indexed chain, bool status);
     event SetMinterEvent(address indexed account, bool status);
     event SetFeeEvent(uint256 fee);
+    event SetTokenEvent(address token);
     event SetConfirmationsRequiredEvent(uint256 confirmationsRequired);
     event PauseEvent(bool status);
     event ConfirmEvent(bytes32 indexed hash, address indexed account);
@@ -40,7 +44,8 @@ contract MttBridge is Ownable {
     constructor(
         address initialOwner,
         address[] memory _minters,
-        uint256 _numConfirmationsRequired
+        uint256 _numConfirmationsRequired,
+        address _token
     ) Ownable(initialOwner) {
         require(_minters.length > 0, "minters required");
         require(
@@ -58,7 +63,9 @@ contract MttBridge is Ownable {
             isMinter[minter] = true;
         }
 
+        minterNum = _minters.length;
         numConfirmationsRequired = _numConfirmationsRequired;
+        token = _token;
     }
 
     function setChain(string calldata name, bool status) external onlyOwner {
@@ -86,6 +93,11 @@ contract MttBridge is Ownable {
         emit SetFeeEvent(_fee);
     }
 
+    function setToken(address _token) external onlyOwner {
+        token = _token;
+        emit SetTokenEvent(_token);
+    }
+
     function pauseBridge(bool _val) external onlyOwner {
         isPause = _val;
         emit PauseEvent(_val);
@@ -99,17 +111,46 @@ contract MttBridge is Ownable {
         emit SetConfirmationsRequiredEvent(_confirmationsRequired);
     }
 
-    function withdraw(address payable to, uint256 value) external onlyOwner {
-        bool sent = to.send(value);
-        require(sent, "Failed to send MTT");
+    function withdraw(address to, uint256 value) external onlyOwner {
+        require(IERC20(token).transfer(to, value), "transfer fail");
     }
 
-    function bridge(string calldata chain) external payable {
-        require(msg.value>fee, "fee not enough");
+    function bridgeWithPermit(
+        uint256 value,
+        string calldata chain,
+        uint256 deadline,
+        uint8 v,
+        bytes32 r,
+        bytes32 s
+    ) external {
+        require(value>fee, "fee not enough");
         require(!isPause, "bridge Paused");
         require(chains[chain], "chain not support");
-        require(msg.value > 0, "value must gt 0");
-        emit BridgeEvent(msg.sender, msg.value, chain);
+        IERC20Permit(token).permit(
+            msg.sender,
+            address(this),
+            value,
+            deadline,
+            v,
+            r,
+            s
+        );
+        require(
+            IERC20(token).transferFrom(msg.sender, address(this), value),
+            "token transfer from fail"
+        );
+        emit BridgeEvent(msg.sender, value, chain);
+    }
+
+    function bridge(uint256 value, string calldata chain) external {
+        require(value>fee, "fee not enough");
+        require(!isPause, "bridge Paused");
+        require(chains[chain], "chain not support");
+        require(
+            IERC20(token).transferFrom(msg.sender, address(this), value),
+            "token transfer from fail"
+        );
+        emit BridgeEvent(msg.sender, value, chain);
     }
 
     modifier onlyMinter() {
@@ -118,7 +159,7 @@ contract MttBridge is Ownable {
     }
 
     modifier notExecuted(bytes32 txHash) {
-        require(!executed[txHash], "tx already confirmed");
+        require(!executed[txHash], "tx already executed");
         _;
     }
 
@@ -151,6 +192,7 @@ contract MttBridge is Ownable {
         if (txLog.approveNum >= numConfirmationsRequired) {
             if (txLog.amount > fee) {
                 amount = txLog.amount - fee;
+                require(IERC20(token).transfer(txLog.addr, amount), "transfer fail");
                 emit MintEvent(txHash, txLog.addr, amount);
             } else {
                 emit MintEvent(txHash, txLog.addr, 0);

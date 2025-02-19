@@ -564,7 +564,7 @@ var (
 
 	pattern_Msg_SetBridge_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 2, 4}, []string{"mtt", "erc20", "v1", "tx", "set_bridge"}, "", runtime.AssumeColonVerbOpt(false)))
 
-	pattern_Msg_SetAdmin_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 2, 4}, []string{"mtt", "erc20", "v1", "tx", "set_bridge"}, "", runtime.AssumeColonVerbOpt(false)))
+	pattern_Msg_SetAdmin_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 2, 4}, []string{"mtt", "erc20", "v1", "tx", "set_admin"}, "", runtime.AssumeColonVerbOpt(false)))
 
 	pattern_Msg_SetBeginBlock_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 2, 4}, []string{"mtt", "erc20", "v1", "tx", "set_begin_block"}, "", runtime.AssumeColonVerbOpt(false)))
 

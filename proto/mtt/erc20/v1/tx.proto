@@ -26,10 +26,10 @@ service Msg {
   rpc SetBridge(MsgSetBridge) returns (MsgSetBridgeResponse) {
     option (google.api.http).get = "/mtt/erc20/v1/tx/set_bridge";
   };
-  // SetBridge set bridge address
-  // mtt bridge address.
+  // SetAdmin set admin address
+  // mtt bridge admin address.
   rpc SetAdmin(MsgSetAdmin) returns (MsgSetAdminResponse) {
-    option (google.api.http).get = "/mtt/erc20/v1/tx/set_bridge";
+    option (google.api.http).get = "/mtt/erc20/v1/tx/set_admin";
   };
   // SetBeginBlock set mine begin block
   // the height of staking have reward.
